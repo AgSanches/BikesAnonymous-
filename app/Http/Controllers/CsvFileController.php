@@ -24,7 +24,7 @@ class CsvFileController extends AuthController
         $validator = Validator::make($request->all(),
             [
                 'name' => 'required|max:191',
-                'csv_file' => 'required|file|max:2048' // I tried to use mimes:text/csv but doesnt validate correctly
+                'csv_file' => 'required|file|max:2048|mimetypes:text/csv,text/plain' // I tried to use mimes:text/csv but doesnt validate correctly
             ]);
 
         if ($validator->fails()) {
@@ -32,6 +32,7 @@ class CsvFileController extends AuthController
         }
 
         $file = $request->file('csv_file');
+
         // Get path of the saved file
         $pathToFile = $this->saveFile($file);
 
