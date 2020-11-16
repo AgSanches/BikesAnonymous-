@@ -99,7 +99,7 @@ class AuthController extends Controller
      *
      * @return \Illuminate\Contracts\Auth\Guard
      */
-    public function guard()
+    public static function guard()
     {
         return Auth::guard();
     }

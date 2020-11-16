@@ -3,83 +3,68 @@
 namespace App\Http\Controllers;
 
 use App\Models\CsvFile;
+use App\Models\User;
+use App\Notifications\FileUpload;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
-class CsvFileController extends Controller
+
+class CsvFileController extends AuthController
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
-    {
-        //
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
 
     /**
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
     public function store(Request $request)
     {
-        //
+
+        $validator = Validator::make($request->all(),
+            [
+                'name' => 'required|max:191',
+                'csv_file' => 'required|file|max:2048' // I tried to use mimes:text/csv but doesnt validate correctly
+            ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 400);
+        }
+
+        $file = $request->file('csv_file');
+        // Get path of the saved file
+        $pathToFile = $this->saveFile($file);
+
+        $user = $this->guard()->user();
+
+        $csvFile = new CsvFile([
+           'name' => $request->name,
+           'user_id' => $user->id,
+            'csv_file' => $pathToFile
+        ]);
+
+        if ($csvFile->save()) {
+            $admin = $this->getAdmin();
+            // First row is header.
+            $rowCount = $this->getFileRows($file->getPathname());
+            $admin->notify(new FileUpload($rowCount));
+            return response()->json(['error' => 'File Upload!'], 201);
+        } else {
+            return response()->json(['error' => 'The file could not be upload, please try again'], 500);
+        }
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\CsvFile  $csvFile
-     * @return \Illuminate\Http\Response
-     */
-    public function show(CsvFile $csvFile)
-    {
-        //
+
+    private function getAdmin() {
+        return User::query()->where('role', '=', 1)->first();
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\CsvFile  $csvFile
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(CsvFile $csvFile)
-    {
-        //
+    private function saveFile($file) {
+        return $file->store('csv_files');
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\CsvFile  $csvFile
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, CsvFile $csvFile)
-    {
-        //
+    private function getFileRows($pathName) {
+        return count(file($pathName)) - 1;
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\CsvFile  $csvFile
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(CsvFile $csvFile)
-    {
-        //
-    }
 }

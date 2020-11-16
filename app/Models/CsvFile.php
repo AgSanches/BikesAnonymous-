@@ -7,7 +7,11 @@ use Illuminate\Database\Eloquent\Model;
 
 class CsvFile extends Model
 {
-    use HasFactory;
+    protected $fillable = [
+        'name',
+        'csv_file',
+        'user_id'
+    ];
 
 
     public function belongsToUser() {
