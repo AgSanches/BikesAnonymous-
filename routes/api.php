@@ -14,6 +14,8 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+
+
 Route::group([
     'middleware' => 'api',
     'namespace' => 'App\Http\Controllers',
@@ -22,6 +24,9 @@ Route::group([
     Route::group([
         'prefix' => 'auth'
     ], function($route) {
+        Route::post('login', function () {
+            return response()->json(['errors' => 'Authenticated require'], 401);
+        })->name('loginRequired');
         Route::post('login', 'AuthController@login');
         Route::post('logout', 'AuthController@logout');
         Route::post('refresh', 'AuthController@refresh');
@@ -29,7 +34,8 @@ Route::group([
     });
 
     Route::group([
-        'prefix' => 'csv'
+        'prefix' => 'csv',
+        'middleware' => 'auth',
     ], function ($route) {
         Route::post('', 'CsvFileController@store');
     });
