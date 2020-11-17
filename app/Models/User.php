@@ -57,4 +57,9 @@ class User extends Authenticatable implements JWTSubject
     {
         return [];
     }
+
+    public function hasManyCsvFiles() {
+        return $this->hasMany('App\Models\CsvFile');
+    }
+
 }
