@@ -49,7 +49,7 @@ class CsvFileController extends AuthController
             // First row is header.
             $rowCount = $this->getFileRows($file->getPathname());
             $admin->notify(new FileUpload($rowCount));
-            return response()->json(['error' => 'File Upload!'], 201);
+            return response()->json(['content' => 'File Upload!'], 201);
         } else {
             return response()->json(['error' => 'The file could not be upload, please try again'], 500);
         }

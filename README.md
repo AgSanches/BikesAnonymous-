@@ -15,4 +15,8 @@ Laravel is a web application framework with expressive, elegant syntax. We belie
     
 Once the file is upload, a email will be send it to the admin, with the number of rows in this file, also this file is save in server along a reference in the database.
 You should add in .env, the mailtrap credentials and JWT_SECRET=YGK7gw5JULl8Xf5RO94DWO8U9SWMSwU7E7OH60n4OMdt7NaGqqF9XDoFAtDDaEq2 or execute:
+
 - php artisan jwt:secret
+
+### Version 1.2
+- Fix response key, when a file is upload.
