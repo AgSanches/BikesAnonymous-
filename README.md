@@ -20,3 +20,9 @@ You should add in .env, the mailtrap credentials and JWT_SECRET=YGK7gw5JULl8Xf5R
 
 ### Version 1.2
 - Fix response key, when a file is upload.
+
+### Version 1.3
+- Refactor CsvFileController.
+- Create job for csv file proccessing.
+- Add sample csv file.
+

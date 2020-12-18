@@ -2,6 +2,7 @@
 
 namespace App\Notifications;
 
+use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
@@ -11,16 +12,16 @@ class FileUpload extends Notification
 {
     use Queueable;
 
-    private $fileRowCount;
+    private $pdfFile;
 
     /**
      * Create a new notification instance.
      *
      * @return void
      */
-    public function __construct($fileRowCount)
+    public function __construct($pdfFile)
     {
-        $this->fileRowCount = $fileRowCount;
+        $this->pdfFile = $pdfFile;
     }
 
     /**
@@ -42,9 +43,11 @@ class FileUpload extends Notification
      */
     public function toMail($notifiable)
     {
+        $name = "report" . Carbon::now()->timestamp . ".pdf";
+
         return (new MailMessage)
             ->line('A new file have been uploaded to the platform.')
-            ->line('Total number of lines: ' . $this->fileRowCount)
+            ->attachData($this->pdfFile, $name)
             ;
     }
 
